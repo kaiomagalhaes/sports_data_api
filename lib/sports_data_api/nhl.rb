@@ -30,6 +30,23 @@ module SportsDataApi
     end
 
     ##
+    # Fetches all NHL season schedule for a given year
+    def self.schedule_all_seasons(year, version = DEFAULT_VERSION)
+      [:PRE, :REG, :PST].collect do |season|
+        schedule year, season, version
+      end
+    end
+
+    ##
+    # Fetches all NHL games from all the seasons for a given year
+    def self.games_all_seasons(year, version = DEFAULT_VERSION)
+      schedule_all_seasons(year, version).collect do |season|
+        season.games
+      end.flatten
+    end
+
+
+    ##
     # Fetches NHL team roster
     def self.team_roster(team, version = DEFAULT_VERSION)
       response = self.response_xml(version, "/teams/#{team}/profile.xml")
