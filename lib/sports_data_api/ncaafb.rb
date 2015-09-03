@@ -35,6 +35,22 @@ module SportsDataApi
     end
 
     ##
+    # Fetches all NHL season schedule for a given year
+    def self.schedule_all_seasons(year, version = DEFAULT_VERSION)
+      [:REG].collect do |season|
+        schedule year, season, version
+      end
+    end
+
+    ##
+    # Fetches all NHL games from all the seasons for a given year
+    def self.games_all_seasons(year, version = DEFAULT_VERSION)
+      schedule_all_seasons(year, version).collect do |season|
+        season.weeks.collect { |week| week.games }.flatten
+      end.flatten
+    end
+
+    ##
     # Fetches Ncaafb season ranking for a given year , poll and week
     def self.rankings(year, poll, week, version = DEFAULT_VERSION)
       raise SportsDataApi::Ncaafb::Exception.new("#{poll} is not a valid poll")  unless Polls.valid_name?(poll)
