@@ -35,6 +35,22 @@ module SportsDataApi
     end
 
     ##
+    # Fetches all NFL season schedule for a given year
+    def self.schedule_all_seasons(year, version = DEFAULT_VERSION)
+      [:PRE, :REG, :PST].collect do |season|
+        schedule year, season, version
+      end
+    end
+
+    ##
+    # Fetches all NFL games from all the seasons for a given year
+    def self.games_all_seasons(year, version = DEFAULT_VERSION)
+      schedule_all_seasons(year, version).collect do |season|
+        season.weeks.collect { |week| week.games }.flatten
+      end.flatten
+    end
+
+    ##
     # Fetch NFL team roster
     def self.team_roster(team, version = DEFAULT_VERSION)
       response = self.response_json(version, "/teams/#{team}/roster.json")
@@ -102,7 +118,7 @@ module SportsDataApi
     private
 
     def self.response_json(version, url)
-      base_url = BASE_URL % { access_level: SportsDataApi.access_level(SPORT), version: version }
+      base_url = BASE_URL % {access_level: SportsDataApi.access_level(SPORT), version: version}
       response = SportsDataApi.generic_request("#{base_url}#{url}", SPORT)
       MultiJson.load(response.to_s)
     end
