@@ -4,14 +4,16 @@ module SportsDataApi
       attr_reader :year, :games
 
       def initialize(xml)
-        xml = xml.first if xml.is_a? Nokogiri::XML::NodeSet
-        @year = xml['season_year']
+        season_schedule = xml.xpath("season-schedule")
+        @year = season_schedule.attr('year').value
+        games = season_schedule.xpath('games')
         @games = []
-        if xml.is_a? Nokogiri::XML::Element
-          xml.xpath('event').each do |event|
-            @games << Game.new(year: @year, xml: event)
+        games.children.each do |game|
+          if game.class == Nokogiri::XML::Element
+            @games << Game.new(year: @year, xml: game)
           end
         end
+        @games
       end
     end
   end

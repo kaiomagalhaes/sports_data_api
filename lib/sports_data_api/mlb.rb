@@ -5,8 +5,8 @@ module SportsDataApi
     end
 
     DIR = File.join(File.dirname(__FILE__), 'mlb')
-    BASE_URL = 'http://api.sportsdatallc.org/mlb-%{access_level}%{version}'
-    DEFAULT_VERSION = 4
+    BASE_URL = 'http://api.sportradar.us/mlb-%{access_level}%{version}'
+    DEFAULT_VERSION = 5
     SPORT = :mlb
 
     autoload :Team, File.join(DIR, 'team')
@@ -33,8 +33,8 @@ module SportsDataApi
     ##
     # Fetches MLB season schedule for a given year and season
     def self.schedule(year=Date.today.year, version = DEFAULT_VERSION)
-      response = self.response_xml(version, "/schedule/#{year}.xml")
-      return Season.new(response.xpath("calendars"))
+      response = self.response_xml(version, "/games/#{year}/pre/schedule.xml")
+      return Season.new(response.xpath("league")).games
     end
 
     ##

@@ -4,15 +4,10 @@ module SportsDataApi
       attr_reader :id, :name, :market, :alias, :league, :division
 
       def initialize(xml)
-        xml = xml.first if xml.is_a? Nokogiri::XML::NodeSet
-        if xml.is_a? Nokogiri::XML::Element
-          @id = xml['id']
-          @name = xml['name']
-          @market = xml['market']
-          @alias = xml['abbr']
-          @league = xml['league']
-          @division = xml['division']
-        end
+        @id = xml.attr('id').value
+        @name = xml.attr('name').value
+        @market = xml.attr('market').value
+        @alias = xml.attr('abbr').value
       end
 
       ##
