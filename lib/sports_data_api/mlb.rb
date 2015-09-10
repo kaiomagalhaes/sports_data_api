@@ -17,7 +17,7 @@ module SportsDataApi
     autoload :Games, File.join(DIR, 'games')
     autoload :Season, File.join(DIR, 'season')
     autoload :Broadcast, File.join(DIR, 'broadcast')
-    autoload :GameStat, File.join(DIR,'game_stat')
+    autoload :GameStat, File.join(DIR, 'game_stat')
     autoload :GameStats, File.join(DIR, 'game_stats')
     autoload :Boxscore, File.join(DIR, 'boxscore')
     autoload :Venue, File.join(DIR, 'venue')
@@ -33,8 +33,10 @@ module SportsDataApi
     ##
     # Fetches MLB season schedule for a given year and season
     def self.schedule(year=Date.today.year, version = DEFAULT_VERSION)
-      response = self.response_xml(version, "/games/#{year}/pre/schedule.xml")
-      return Season.new(response.xpath("league")).games
+      ['pre', 'reg', 'pst'].collect do |season|
+        response = self.response_xml(version, "/games/#{year}/pre/schedule.xml")
+        Season.new(response.xpath("league")).games
+      end.flatten
     end
 
     ##
@@ -53,14 +55,14 @@ module SportsDataApi
 
     ##
     # Fetch MLB game stats
-    def self.game_statistics(event_id, version = DEFAULT_VERSION )
+    def self.game_statistics(event_id, version = DEFAULT_VERSION)
       response = self.response_xml(version, "/statistics/#{event_id}.xml")
       return GameStats.new(response.xpath("/statistics"))
     end
 
     ##
     # Fetch MLB Game Boxscore
-    def self.game_boxscore(event_id, version = DEFAULT_VERSION )
+    def self.game_boxscore(event_id, version = DEFAULT_VERSION)
       response = self.response_xml(version, "/boxscore/#{event_id}.xml")
       return Boxscore.new(response.xpath("/boxscore"))
     end
@@ -74,7 +76,7 @@ module SportsDataApi
 
     private
     def self.response_xml(version, url)
-      base_url = BASE_URL % { access_level: SportsDataApi.access_level(SPORT), version: version }
+      base_url = BASE_URL % {access_level: SportsDataApi.access_level(SPORT), version: version}
       response = SportsDataApi.generic_request("#{base_url}#{url}", SPORT)
       Nokogiri::XML(response.to_s).remove_namespaces!
     end
