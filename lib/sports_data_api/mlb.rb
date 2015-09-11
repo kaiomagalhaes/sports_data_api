@@ -34,7 +34,7 @@ module SportsDataApi
     # Fetches MLB season schedule for a given year and season
     def self.schedule(year=Date.today.year, version = DEFAULT_VERSION)
       ['pre', 'reg', 'pst'].collect do |season|
-        response = self.response_xml(version, "/games/#{year}/pre/schedule.xml")
+        response = self.response_xml(version, "/games/#{year}/#{season}/schedule.xml")
         Season.new(response.xpath("league")).games
       end.flatten
     end
