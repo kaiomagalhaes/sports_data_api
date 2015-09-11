@@ -88,7 +88,7 @@ module SportsDataApi
       [:FBS, :FCS, :D2, :D3, :NAIA, :USCAA].collect do |division|
         response = self.response_json(version, "/teams/#{division}/hierarchy.json")
         Teams.new(response)
-      end.flatten
+      end
     end
 
     # Fetch Ncaafb team roster
@@ -112,7 +112,7 @@ module SportsDataApi
     private
 
     def self.response_json(version, url)
-      base_url = BASE_URL % {access_level: SportsDataApi.access_level(SPORT), version: version}
+      base_url = BASE_URL % { access_level: SportsDataApi.access_level(SPORT), version: version }
       response = SportsDataApi.generic_request("#{base_url}#{url}", SPORT)
       MultiJson.load(response.to_s)
     end
