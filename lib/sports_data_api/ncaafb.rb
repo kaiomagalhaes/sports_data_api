@@ -53,10 +53,10 @@ module SportsDataApi
     ##
     # Fetches Ncaafb season ranking for a given year , poll and week
     def self.rankings(year, poll, week, version = DEFAULT_VERSION)
-      raise SportsDataApi::Ncaafb::Exception.new("#{poll} is not a valid poll")  unless Polls.valid_name?(poll)
+      raise SportsDataApi::Ncaafb::Exception.new("#{poll} is not a valid poll") unless Polls.valid_name?(poll)
       raise SportsDataApi::Ncaafb::Exception.new("#{week} nr is not a valid week nr") unless Polls.valid_week?(week)
 
-      response = self.response_json(version,  "/polls/#{poll}/#{year}/#{week}/rankings.json")
+      response = self.response_json(version, "/polls/#{poll}/#{year}/#{week}/rankings.json")
       return Polls.new(response)
     end
 
@@ -84,11 +84,11 @@ module SportsDataApi
 
     ##
     # Fetches all Ncaafb teams
-    def self.teams(division, version = DEFAULT_VERSION)
-      raise SportsDataApi::Ncaafb::Exception.new("#{division} is not a valid division") unless Division.valid?(division)
-      response = self.response_json(version, "/teams/#{division}/hierarchy.json")
-
-      return Teams.new(response)
+    def self.all_teams(version = DEFAULT_VERSION)
+      ['FBS', 'FCS', 'D2', 'D3', 'NAIA', 'USCAA'].collect do |division|
+        response = self.response_json(version, "/teams/#{division}/hierarchy.json")
+        Teams.new(response)
+      end.flatten
     end
 
     # Fetch Ncaafb team roster
@@ -112,7 +112,7 @@ module SportsDataApi
     private
 
     def self.response_json(version, url)
-      base_url = BASE_URL % { access_level: SportsDataApi.access_level(SPORT), version: version }
+      base_url = BASE_URL % {access_level: SportsDataApi.access_level(SPORT), version: version}
       response = SportsDataApi.generic_request("#{base_url}#{url}", SPORT)
       MultiJson.load(response.to_s)
     end
