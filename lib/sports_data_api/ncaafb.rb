@@ -85,7 +85,7 @@ module SportsDataApi
     ##
     # Fetches all Ncaafb teams
     def self.all_teams(version = DEFAULT_VERSION)
-      ['FBS', 'FCS', 'D2', 'D3', 'NAIA', 'USCAA'].collect do |division|
+      [:FBS, :FCS, :D2, :D3, :NAIA, :USCAA].collect do |division|
         response = self.response_json(version, "/teams/#{division}/hierarchy.json")
         Teams.new(response)
       end.flatten
